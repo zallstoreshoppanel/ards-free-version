@@ -1,0 +1,294 @@
+<!doctype html>
+
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ARDS FREE VERSION — Panel () v11</title>
+  <style>
+    :root{--bg:#060409;--panel:#0b0f17;--accent1:#6d28d9;--accent2:#06b6d4;--muted:#99a3b0;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#020205 0%,#071226 100%);color:#e6eef6;min-height:100vh;display:flex;justify-content:center}
+    .wrap{width:100%;max-width:412px;margin:18px}/* Header */
+.hdr{display:flex;align-items:center;gap:10px}
+.hdr .menu{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
+.brand{flex:1;text-align:center;font-weight:700;font-size:18px}
+.hdr .avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center}
+
+/* Hero card */
+.hero{margin-top:12px;background:linear-gradient(135deg,#3b0764 0%,#6d28d9 60%);border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(17,12,38,0.6);position:relative}
+.hero img{width:100%;height:150px;object-fit:cover;border-radius:10px;display:block}
+.hero .caption{position:absolute;left:16px;bottom:16px;color:#fff;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+
+/* top icons */
+.icons{display:flex;gap:10px;margin-top:12px}
+.icon{flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);text-align:center}
+.icon .label{display:block;margin-top:8px;color:var(--muted);font-size:12px}
+
+/* status */
+.status{display:flex;align-items:center;gap:8px;margin-top:12px}
+.dot{width:12px;height:12px;border-radius:50%;background:#ff0808;box-shadow:0 0 12px rgba(16,185,129,0.32);position:relative}
+.dot::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:rgba(16,185,129,0.08);opacity:0}
+@keyframes pulse {0%{transform:scale(0.9);opacity:1}50%{transform:scale(1.12);opacity:0.9}100%{transform:scale(0.9);opacity:1}}
+.dot{animation:pulse 1.6s infinite ease-in-out}
+.status span{font-size:14px;color:#cfeefb}
+
+/* stats card */
+.stats{margin-top:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.02));padding:12px;border-radius:14px}
+.stats h4{margin:0 0 8px 0}
+.stat-row{display:flex;justify-content:space-between;padding:10px 6px;border-top:1px solid rgba(255,255,255,0.02)}
+.stat-row:first-of-type{border-top:0}
+
+/* control card */
+.control{margin-top:12px;background:rgba(255,255,255,0.02);padding:12px;border-radius:14px}
+.bug-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bug{padding:10px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03);cursor:pointer;text-align:center}
+.bug.selected{outline:2px solid rgba(124,58,237,0.22)}
+
+input[type=text]{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;margin-top:10px}
+.actions{display:flex;gap:10px;margin-top:10px}
+.btn{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+.log{margin-top:10px;font-size:13px;color:var(--muted);min-height:44px}
+
+/* terminal (always visible, not covering controls) */
+.terminal{margin-top:12px;background:#05070a;border-radius:8px;padding:8px;height:120px;overflow:auto;border:1px solid rgba(255,255,255,0.02);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.terminal .line{color:#9ddfd8;margin-bottom:6px}
+
+/* modal & toast */
+.overlay{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(3px)}
+.modal{background:linear-gradient(180deg,rgba(11,8,20,0.9),rgba(8,6,14,0.9));padding:14px;border-radius:12px;min-width:280px;color:#e6eef6}
+.progress{height:12px;background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden}
+.progress > div{height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 0.2s linear}
+.toast{position:fixed;right:18px;top:18px;background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:10px 14px;border-radius:10px;color:#fff;box-shadow:0 10px 30px rgba(12,10,30,0.6);z-index:300}
+
+/* bottom nav */
+.bottom-nav{position:fixed;left:8px;right:8px;bottom:8px;display:flex;gap:8px;max-width:412px;margin:auto;padding:8px;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);border-radius:12px;justify-content:space-around}
+.nav-item{width:56px;height:56px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
+
+.icon-svg{width:22px;height:22px;display:block;margin:0 auto}
+
+@media (max-width:420px){.hero img{height:140px}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap" role="application">
+    <header class="hdr">
+      <div class="menu">&#9776;</div>
+      <div class="brand">ARDS FREE VERSION</div>
+      <div class="avatar"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 20a9 9 0 0118 0H3z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </header><section class="hero" aria-hidden>
+  <img src="https://s3.ezgif.com/tmp/ezgif-33133d9ef68216.png" alt="banner" />
+  <div class="caption">ARDS — Buy Premium Bug Chat @ARDSDEV</div>
+</section>
+
+<div class="icons">
+  <div class="icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="label">DDoS Panel</span></div>
+  <div class="icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="label">WhatsApp</span></div>
+  <div class="icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="label">Chat</span></div>
+  <div class="icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="label">Account</span></div>
+</div>
+
+<div class="status"><div class="dot" aria-hidden></div><span>Tidak Terhubung</span></div>
+
+<div class="stats" aria-live="polite">
+  <h4>Server Stats</h4>
+  <div class="stat-row"><div>Online Users</div><div id="onlineCount">0</div></div>
+  <div class="stat-row"><div>Active Sender</div><div id="activeCount">0</div></div>
+</div>
+
+<div class="control">
+  <h4>Jalankan Bug</h4>
+  <div class="bug-list" id="bugList"></div>
+
+  <input id="target" type="text" placeholder="Nomor target (contoh: 628123...)" />
+
+  <div class="actions">
+    <button class="btn primary" id="runBtn">Jalankan</button>
+    <button class="btn ghost" id="copyBtn">Salin Payload</button>
+  </div>
+
+  <div class="log" id="log">Siap — pilih bug dan masukkan nomor target.</div>
+</div>
+
+<div class="terminal" id="terminal" aria-live="polite"></div>
+
+  </div>  <nav class="bottom-nav" aria-hidden>
+    <div class="nav-item"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v8a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-item"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-item"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-item"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </nav>  <!-- overlay container (used for modals/toasts) -->  <div id="overlayRoot"></div>  <script>
+    // --- Config ---
+    const WEBHOOK = 'https://discord.com/api/webhooks/1429031654579769490/9f4uWcxz5zAiTgnDsJcXW7CQXOtWSGSOFJ6HEDi_V2WaYOhsES7SIQqYV9YLptAJ1PqV';
+    const BUGS = [
+      {id:'BUG_UI', label:'BUG UI'},
+      {id:'BUG_IOS', label:'BUG IOS'},
+      {id:'BUG_SPAM', label:'BUG SPAM'},
+      {id:'BUG_AUTH', label:'BUG AUTH'},
+      {id:'BUG_BRUTAL', label:'BUG BRUTAL'}
+    ];
+
+    // --- State & Elements ---
+    const bugListEl = document.getElementById('bugList');
+    const targetEl = document.getElementById('target');
+    const runBtn = document.getElementById('runBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const logEl = document.getElementById('log');
+    const onlineCountEl = document.getElementById('onlineCount');
+    const activeCountEl = document.getElementById('activeCount');
+    const terminalEl = document.getElementById('terminal');
+    const overlayRoot = document.getElementById('overlayRoot');
+
+    let selectedBug = null;
+    let stats = {online:0,active:0};
+    const LS_KEY = 'ards__logs_v1';
+
+    // --- Helpers ---
+    function isoNow(){ return new Date().toISOString(); }
+    function nowLocal(){ return new Date().toLocaleString(); }
+    function saveLog(entry){
+      const data = JSON.parse(localStorage.getItem(LS_KEY)||'[]');
+      data.unshift(entry);
+      localStorage.setItem(LS_KEY, JSON.stringify(data.slice(0,200)));
+      appendTerminal(entry);
+    }
+    function loadStats(){
+      const s = JSON.parse(localStorage.getItem('ards_stats')||'{}');
+      stats = Object.assign({online: Math.floor(5 + Math.random()*6), active:0}, s);
+      onlineCountEl.textContent = stats.online;
+      activeCountEl.textContent = stats.active;
+    }
+    function persistStats(){ localStorage.setItem('ards_stats', JSON.stringify(stats)); }
+
+    // terminal append
+    function appendTerminal(entry){
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.textContent = `[${new Date(entry.time).toLocaleTimeString()}] ${entry.mode.toUpperCase()} — ${entry.bug} -> ${entry.target}`;
+      terminalEl.prepend(line);
+    }
+
+    // --- Render buttons ---
+    function renderBugs(){
+      BUGS.forEach(b=>{
+        const el = document.createElement('div');
+        el.className = 'bug';
+        el.tabIndex = 0;
+        el.innerHTML = `<div style="font-weight:700">${b.label}</div><div class="small">${b.id}</div>`;
+        el.addEventListener('click', ()=>selectBug(b, el));
+        el.addEventListener('keypress', (e)=>{ if(e.key==='Enter') selectBug(b,el); });
+        bugListEl.appendChild(el);
+      });
+    }
+
+    function selectBug(b, el){
+      document.querySelectorAll('.bug').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedBug = b;
+      setLog(`Dipilih: ${b.label}`);
+    }
+
+    function buildPayload(target, bug){
+      return {
+        username: 'ARDS — Notifier',
+        embeds: [{
+          title: `Bug executed — ${bug.label}`,
+          color: 7506394,
+          fields: [
+            {name:'Target', value: String(target), inline:true},
+            {name:'Bug', value: bug.id, inline:true},
+            {name:'Time', value: isoNow(), inline:false}
+          ],
+          footer: {text: 'ARDS FREE VERSION — '}
+        }]
+      };
+    }
+
+    async function trySendWebhook(payload){
+      try{
+        const res = await fetch(WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(payload)});
+        if(res.ok) return {ok:true,mode:'direct'};
+        return {ok:false,mode:'direct',status:res.status};
+      }catch(err){
+        return {ok:false,mode:'error',error:err.message};
+      }
+    }
+
+    // --- modern modal/toast utilities ---
+    function showToast(message, timeout=2500){
+      const t = document.createElement('div'); t.className = 'toast'; t.textContent = message; overlayRoot.appendChild(t);
+      setTimeout(()=>{ t.style.opacity = '0'; t.style.transform = 'translateY(-8px)'; setTimeout(()=>t.remove(),400); }, timeout);
+    }
+
+    function showProgressModal(durationSec=15){
+      return new Promise(resolve=>{
+        const overlay = document.createElement('div'); overlay.className='overlay';
+        const modal = document.createElement('div'); modal.className='modal';
+        modal.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Menjalankan bug...</div><div class="progress"><div id="bar"></div></div><div style="margin-top:10px;font-size:13px;color:var(--muted)" id="progressText">0%</div>`;
+        overlay.appendChild(modal); overlayRoot.appendChild(overlay);
+        const bar = modal.querySelector('#bar'); const txt = modal.querySelector('#progressText');
+        let elapsed = 0; const total = durationSec; const step = 100; // ms
+        const timer = setInterval(()=>{
+          elapsed += step/1000;
+          const pct = Math.min(100, Math.round((elapsed/total)*100));
+          bar.style.width = pct + '%'; txt.textContent = `${pct}% — ${Math.max(0, total - Math.floor(elapsed))}s tersisa`;
+          if(elapsed >= total){ clearInterval(timer); overlay.remove(); resolve(); }
+        }, step);
+      });
+    }
+
+    function setLog(text){ logEl.textContent = text; }
+
+    // --- Actions ---
+    runBtn.addEventListener('click', async ()=>{
+      const target = targetEl.value.trim();
+      if(!selectedBug){ showToast('Pilih jenis bug terlebih dahulu'); return; }
+      if(!target){ showToast('Masukkan nomor target'); return; }
+
+      // disable UI while running
+      runBtn.disabled = true; runBtn.textContent = 'Proses...';
+
+      // show progress for 15s
+      await showProgressModal(15);
+
+      // build payload and try send
+      const payload = buildPayload(target, selectedBug);
+      const res = await trySendWebhook(payload);
+      let mode = res.ok ? 'direct' : '';
+      let note = res.ok ? 'Terkirim ke webhook.' : ' terkirim (CORS atau jaringan).';
+
+      // update stats & save log
+      stats.active = (stats.active || 0) + 1; persistStats(); onlineCountEl.textContent = stats.online; activeCountEl.textContent = stats.active;
+      const entry = {target, bug:selectedBug.id, time:isoNow(), mode, note}; saveLog(entry);
+
+      // show toast and update UI
+      showToast(note, 3000);
+      setLog(`${note} Target: ${target} — ${nowLocal()}`);
+      runBtn.textContent = 'Sukses ✓';
+      setTimeout(()=>{ runBtn.textContent = 'Jalankan'; runBtn.disabled = false; }, 1600);
+    });
+
+    copyBtn.addEventListener('click', ()=>{
+      if(!selectedBug){ showToast('Pilih bug terlebih dahulu'); return; }
+      const target = targetEl.value.trim() || '—';
+      const payload = buildPayload(target, selectedBug);
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(()=>{ showToast('Payload disalin ke clipboard'); }).catch(()=>{
+        const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'payload.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        showToast('Gagal salin — file payload diunduh sebagai fallback');
+      });
+    });
+
+    // Init
+    renderBugs(); loadStats();
+
+    // brief animation: subtle terminal entry
+    setTimeout(()=>{
+      const initial = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); if(initial.length) initial.slice(0,5).forEach(e=>appendTerminal(e));
+    },400);
+  </script></body>
+</html>
