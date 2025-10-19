@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Firebase + Discord Notif</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyArE6B5jQCSECpOusTxrOYmUsjeFEa17YI",
+  authDomain: "bugwa-1fc47.firebaseapp.com",
+  projectId: "bugwa-1fc47",
+  storageBucket: "bugwa-1fc47.firebasestorage.app",
+  messagingSenderId: "309575475227",
+  appId: "1:309575475227:web:c2a7a9123afb30023698be"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔗 Webhook Discord kamu
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1429031654579769490/9f4uWcxz5zAiTgnDsJcXW7CQXOtWSGSOFJ6HEDi_V2WaYOhsES7SIQqYV9YLptAJ1PqV";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  const msg = document.getElementById("message");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "🔄 Sedang login...";
+
+    const email = form.email.value.trim();
+    const password = form.password.value.trim();
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      msg.textContent = "✅ Login berhasil! Mengalihkan halaman...";
+      msg.style.color = "#00ff99";
+
+      // 🔔 Kirim notifikasi ke Discord
+      const embed = {
+        username: "ARDS INFORMATION",
+        avatar_url: "https://files.catbox.moe/3ynqz6.jpeg",
+        embeds: [
+          {
+            title: "✅ Login Berhasil",
+            description: `Pengguna berhasil login ke sistem.`,
+            color: 0x00ff88,
+            fields: [
+              { name: "📧 Email", value: email, inline: true },
+              { name: "🕒 Waktu", value: new Date().toLocaleString("id-ID"), inline: true }
+            ],
+            footer: { text: "Ards Bug Login System 🔥" },
+            thumbnail: { url: "https://files.catbox.moe/3ynqz6.jpeg" }
+          }
+        ]
+      };
+
+      await fetch(DISCORD_WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(embed)
+      }).catch(console.error);
+
+      // 🕒 Redirect ke halaman berikut setelah 2 detik
+      setTimeout(() => {
+        window.location.href = "homepage.html"; // ubah sesuai halaman tujuanmu
+      }, 2000);
+
+    } catch (error) {
+      msg.textContent = "❌ Login gagal: " + error.message;
+      msg.style.color = "#ff5555";
+      console.error(error);
+    }
+  });
+});
+</script>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #111);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+.card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 35px;
+  border-radius: 20px;
+  width: 340px;
+  box-shadow: 0 0 30px rgba(0, 255, 128, 0.1);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+h2 {
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #00ff99, #00ccff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  margin: 10px 0;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+button {
+  background: linear-gradient(90deg, #00ff99, #00ccff);
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+  transition: 0.3s;
+}
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #00ffaa;
+}
+#message {
+  margin-top: 12px;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>Login Ards Free</h2>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="Email" required><br>
+      <input type="password" name="password" placeholder="Password" required><br>
+      <button type="submit">Login</button>
+    </form>
+    <div id="message"></div>
+  </div>
+</body>
+  </html>
